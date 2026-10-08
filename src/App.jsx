@@ -1,11 +1,12 @@
 
 import { useGame } from "./context/GameContext";
 import Flag from "./components/Flag";
+import GuessForm from "./components/GuessForm";
 
-// Componente principal del juego
+// Pantalla principal del juego
 function App() {
 
-  // Obtengo el puntaje desde Context
+  // Obtengo el puntaje desde el contexto
   const { score } = useGame();
 
   return (
@@ -14,17 +15,12 @@ function App() {
 
       <p>¿A qué país pertenece esta bandera?</p>
 
-      {/* Muestro la bandera sin revelar el país */}
+      {/* Bandera que hay que adivinar */}
       <Flag />
 
-      <input
-        type="text"
-        placeholder="Escribí el país"
-      />
+      {/* Formulario para escribir la respuesta */}
+      <GuessForm />
 
-      <button>Adivinar</button>
-
-      {/* Muestro el puntaje actual */}
       <h2>Puntaje: {score}</h2>
     </div>
   );
