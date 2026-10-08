@@ -7,7 +7,7 @@ import GuessForm from "./components/GuessForm";
 function App() {
 
   // Obtengo el puntaje desde el contexto
-  const { score } = useGame();
+ const { currentCountry, score } = useGame();
 
   return (
     <div>
@@ -17,7 +17,7 @@ function App() {
 
       {/* Bandera que hay que adivinar */}
       <Flag />
-
+<p>Respuesta de prueba: {currentCountry?.name}</p>
       {/* Formulario para escribir la respuesta */}
       <GuessForm />
 
