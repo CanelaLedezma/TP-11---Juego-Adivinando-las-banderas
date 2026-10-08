@@ -6,40 +6,57 @@ const GameContext = createContext();
 
 export function GameProvider({ children }) {
 
-  // Lista de países que llega desde la API
+  // Guardo los países que recibo de la API
   const [countries, setCountries] = useState([]);
 
-  // País que el jugador tiene que adivinar
+  // Guardo el país que hay que adivinar
   const [currentCountry, setCurrentCountry] = useState(null);
 
-  // Puntaje actual del jugador
+  // Guardo el puntaje del jugador
   const [score, setScore] = useState(0);
 
-  // Elijo un país al azar de una lista
+  // Selecciono un país al azar
   function nextCountry(countryList = countries) {
     if (countryList.length === 0) return;
 
-    // Genero una posición aleatoria de la lista
     const randomIndex = Math.floor(Math.random() * countryList.length);
-
-    // Guardo el país que está en esa posición
     setCurrentCountry(countryList[randomIndex]);
   }
 
-  // Traigo los países cuando se inicia la aplicación
+  // Compruebo si la respuesta del jugador es correcta
+  function checkGuess(guess) {
+    if (!currentCountry || !guess.trim()) return;
+
+    // Comparo sin distinguir mayúsculas ni espacios
+    const answer = guess.trim().toLowerCase();
+    const correctCountry = currentCountry.name.trim().toLowerCase();
+
+    if (answer === correctCountry) {
+
+      // Si acierta, sumo 10 puntos y cambio de bandera
+      setScore((previousScore) => previousScore + 10);
+      nextCountry();
+
+      return true;
+    } else {
+
+      // Si falla, resto 1 punto
+      setScore((previousScore) => previousScore - 1);
+
+      return false;
+    }
+  }
+
+  // Pido los países a la API al iniciar la aplicación
   useEffect(() => {
     fetch("https://countriesnow.space/api/v0.1/countries/flag/images")
       .then((response) => response.json())
       .then((result) => {
 
-        // Compruebo que la API devolvió una lista válida
+        // Verifico que la respuesta contenga países
         if (result.error === false && Array.isArray(result.data)) {
           setCountries(result.data);
-
-          // Elijo el primer país apenas recibo la lista
           nextCountry(result.data);
-
-          console.log("Países obtenidos:", result.data);
         }
       })
       .catch((error) => {
@@ -47,20 +64,21 @@ export function GameProvider({ children }) {
       });
   }, []);
 
-  // Comparto los datos y funciones del juego
+  // Comparto los estados y funciones del juego
   return (
     <GameContext.Provider value={{
       countries,
       currentCountry,
       score,
-      nextCountry
+      nextCountry,
+      checkGuess
     }}>
       {children}
     </GameContext.Provider>
   );
 }
 
-// Hook para usar el contexto desde otros componentes
+// Hook para acceder a los datos del juego
 export function useGame() {
   return useContext(GameContext);
 }

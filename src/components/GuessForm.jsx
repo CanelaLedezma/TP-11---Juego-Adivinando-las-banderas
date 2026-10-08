@@ -1,23 +1,38 @@
 
 import { useState } from "react";
+import { useGame } from "../context/GameContext";
 
-// Componente donde el jugador escribe su respuesta
 function GuessForm() {
 
-  // Guardo lo que el usuario escribe en el input
+  // Guardo lo que escribe el jugador
   const [guess, setGuess] = useState("");
 
-  // Se ejecuta cuando el jugador envía su respuesta
+  // Obtengo la función del contexto
+  const { checkGuess } = useGame();
+
+  // Se ejecuta cuando el jugador envía la respuesta
   function handleSubmit(event) {
     event.preventDefault();
 
-    // Por ahora muestro la respuesta en la consola
-    console.log("Respuesta del jugador:", guess);
+    // Evito enviar respuestas vacías
+    if (!guess.trim()) return;
+
+    // Compruebo la respuesta con la lógica del contexto
+    const isCorrect = checkGuess(guess);
+
+    if (isCorrect) {
+      console.log("¡Respuesta correcta!");
+    } else {
+      console.log("Respuesta incorrecta");
+    }
+
+    // Limpio el campo después de responder
+    setGuess("");
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      {/* Campo para escribir el país */}
+      {/* Campo donde el jugador escribe el país */}
       <input
         type="text"
         placeholder="Escribí el país"
@@ -25,7 +40,7 @@ function GuessForm() {
         onChange={(event) => setGuess(event.target.value)}
       />
 
-      {/* Envía el formulario */}
+      {/* Botón para comprobar la respuesta */}
       <button type="submit">Adivinar</button>
     </form>
   );
